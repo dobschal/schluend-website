@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import * as crypto from "node:crypto";
 
 const app = express()
-const port = 3000
+const port = 3004
 const password = "574e80594b0528fea3e72810690107337df9a5b245ee193ed84e88fb16627ea0938a6de3bd9856f34a39e779ed02591fc10d6cd9303c67ab8b8e3d88a1cd58fd";
 const salt = "9e91b9c85710750b07c7013b2e21f5a3";
 

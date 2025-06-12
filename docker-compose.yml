@@ -1,0 +1,7 @@
+services:
+  schluend-website:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3004"
