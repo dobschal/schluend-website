@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+    <title>Schlünd</title>
+    <script>
+        async function load(url) {
+            const rawResponse = await fetch(url);
+            return await rawResponse.json();
+        }
+
+        function render(target, template) {
+            const el = document.createElement("div");
+            el.innerHTML = template;
+            document.querySelector(target).appendChild(el.children[0]);
+        }
+
+        function ensureValidJson(json) {
+            try {
+                JSON.parse(json);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/build/style.css">
+</head>
+<body>
+
+<!-- region: First Page -->
+<section>
+    <h1>Schlünd</h1>
+    <nav>
+        <a href="/">SCHLÜND</a>
+        <a href="#music">Musik</a>
+        <a href="#concerts">Konzerte</a>
+        <a href="#photos">Fotos</a>
+        <a href="#concerts">Booking</a>
+    </nav>
+    <div class="social-media-items">
+        <a href="" id="spotify">Spotify</a>
+        <a href="" id="apple-music">Apple Music</a>
+        <a href="" id="youtube">YouTube</a>
+        <a href="" id="instagram">Instagram</a>
+        <a href="" id="bandcamp">Bandcamp</a>
+    </div>
+    <div class="hero-image-with-text">
+        <img class="hero-image" src="/2025-schlünd.png" alt="SCHLÜND">
+        <p>
+            SCHLÜNDs Musik ist wie ein Schlag in die Magengrube: hart, dreckig und von bleibendem Eindruck.
+            Geprägt von intensiven Beats und hypnotischen Riffs ist jeder Song eine Einladung sich von
+            festgefahrenen Strukturen zu befreien und der musikalischen Entfaltung hinzugeben.
+        </p>
+    </div>
+</section>
+
+<!-- endregion: First Page -->
+
+<!-- region: Music -->
+
+<section id="music">
+    <h2>Musik</h2>
+    <% for (const musicItem of musicItems) { %>
+        <div>
+            <img src="<%= musicItem.image %>" alt="<%= musicItem.title %>">
+            <div>
+                <h3><%= musicItem.title %></h3>
+                <p>
+                    <a href="<%= musicItem.spotify %>" target="_blank">Spotify</a> |
+                    <a href="<%= musicItem.bandcamp %>" target="_blank">Bandcamp</a> |
+                    Released on
+                    <time datetime="<%= musicItem.releaseDate %>"><%= musicItem.releaseDate %></time>
+                </p>
+            </div>
+        </div>
+    <% } %>
+</section>
+
+<!-- endregion: Music -->
+
+<!-- region concerts -->
+<section id="concerts">
+    <h2>Konzerte</h2>
+    <% for(const concert of concerts) { %>
+        <a href="<%= concert.link %>">
+            <span><%= concert.date %></span>
+            <span><%= concert.title %></span>
+        </a>
+    <% } %>
+    <p>
+        <b>Booking: </b> 👉 <a href="mailto:booking@schluend.fun">booking@schluend.fun</a>
+    </p>
+</section>
+
+<!-- endregion concerts -->
+
+<footer>
+    <button id="login-button">Anmelden</button>
+    <p>© 2025 SCHLÜND. Alle Rechte vorbehalten. Diese Seite verwendet keinerlei Cookies oder Third-Party tools. Es
+        werden keine Nutzerdaten erfasst.</p>
+</footer>
+
+<!-- region admin -->
+
+<div id="login-modal" class="modal">
+    <div class="modal-content">
+        <div>
+            <a href="/" class="close">&times;</a>
+            <h2>Login</h2>
+        </div>
+        <p id="login-error"></p>
+        <form id="login-form">
+            <label for="password">Passwort:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Anmelden</button>
+        </form>
+    </div>
+</div>
+
+<div id="admin-modal" class="modal">
+    <div class="modal-content">
+        <div>
+            <a href="/" class="close">&times;</a>
+            <h2>Admin</h2>
+        </div>
+        <label for="data-select">
+            Welche Daten möchtest du bearbeiten?
+            <select id="data-select">
+                <option disabled selected>Bitte wähle eine Option:</option>
+                <option value="photos">Fotos</option>
+                <option value="concerts">Konzerte</option>
+                <option value="music">Musik</option>
+            </select>
+        </label>
+        <textarea id="editor" rows="20"></textarea>
+        <button id="save-button">Speichern</button>
+        <hr>
+        <button id="logout-button">Logout</button>
+    </div>
+</div>
+
+<script>
+    const loginButton = document.getElementById("login-button");
+    const loginModal = document.getElementById("login-modal");
+    const loginForm = document.getElementById("login-form");
+    const loginError = document.getElementById("login-error");
+    const adminModal = document.getElementById("admin-modal");
+    const logoutButton = document.getElementById("logout-button");
+    const editor = document.getElementById("editor");
+    const dataSelect = document.getElementById("data-select");
+    const saveButton = document.getElementById("save-button");
+
+    if (window.localStorage.getItem("yeah")) {
+        loginButton.innerHTML = "Admin";
+    }
+
+    loginButton.onclick = function () {
+        if (window.localStorage.getItem("yeah")) {
+            adminModal.style.display = "block";
+            return;
+        }
+        loginModal.style.display = "block";
+    }
+
+    loginForm.onsubmit = async function (event) {
+        event.preventDefault();
+        loginError.innerHTML = "";
+        const password = document.getElementById("password").value;
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({password})
+        })
+        if (response.status !== 200) {
+            loginError.innerHTML = "Anmeldung fehlgeschlagen. ";
+        } else {
+            loginForm.reset();
+            loginModal.style.display = "none";
+            adminModal.style.display = "block";
+            window.localStorage.setItem("yeah", btoa(password));
+        }
+    }
+
+    logoutButton.onclick = function () {
+        window.localStorage.removeItem("yeah");
+        adminModal.style.display = "none";
+        loginButton.innerHTML = "Anmelden";
+    }
+
+    dataSelect.onchange = async function () {
+        const selectedData = dataSelect.value;
+        editor.textContent = "";
+        const response = await fetch(`/data/${selectedData}.json`);
+        if (response.status !== 200) {
+            editor.textContent = "Fehler beim Laden der Daten.";
+            return;
+        }
+        editor.textContent = await response.text();
+        saveButton.onclick = async function () {
+            const password = atob(window.localStorage.getItem("yeah"));
+            const data = editor.value;
+            const isValidJson = ensureValidJson(data);
+            if (!isValidJson) {
+                alert("Die eingegebenen Daten sind kein gültiges JSON.");
+                return;
+            }
+            const saveResponse = await fetch(`/data`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({data, selectedData, password})
+            });
+            if (saveResponse.status !== 200) {
+                alert("Fehler beim Speichern der Daten.");
+            } else {
+                alert("Daten erfolgreich gespeichert.");
+            }
+        };
+    }
+</script>
+
+<!-- endregion admin -->
+
+</body>
+</html>
