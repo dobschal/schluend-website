@@ -3,5 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - type: bind
+        source: ./public/data
+        target: /usr/src/app/public/data
     ports:
       - "3004:3004"
