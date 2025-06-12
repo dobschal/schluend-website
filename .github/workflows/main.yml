@@ -23,7 +23,7 @@ jobs:
           SSH_HOST: ${{ secrets.HOST }}
 
       - name: Check out the source
-        run: ssh hetzner 'cd /root/deployments/schluend-website && git fetch && git reset --hard origin/main'
+        run: ssh hetzner 'cd /root/deployments/schluend-website && git fetch && git reset --hard origin/main && mkdir -p public/data'
 
       - name: Stop old server and build new image
         run: ssh hetzner 'cd /root/deployments/schluend-website && docker compose down schluend-website && docker compose build schluend-website --no-cache'
