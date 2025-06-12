@@ -101,7 +101,20 @@
 
 <section id="photos">
     <h2>Fotos</h2>
+    <div></div>
 </section>
+
+<script>
+    const photos = ["SCHLÜND 2024 (2).JPG", "SCHLÜND 2024_hochkant (1).jpg", "SCHLÜND 2025_komprimiert.jpg", "schlünd1.png", "schlünd3.png", "schlünd5.png", "schlünd20.png", "schlünd22.png"];
+    const photosSection = document.querySelector("#photos > div");
+    photos.forEach(photo => {
+        const img = document.createElement("img");
+        img.src = `/photos/${photo}`;
+        img.alt = "SCHLÜND";
+        img.classList.add("photo");
+        photosSection.appendChild(img);
+    });
+</script>
 
 <!-- endregion photos -->
 

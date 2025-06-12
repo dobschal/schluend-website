@@ -443,3 +443,18 @@ nav {
 }
 
 // endregion
+
+// region photos
+
+#photos {
+  width: 100%;
+  max-width: var(--container-width);
+  margin: 0 auto;
+
+  img {
+    width: 100%;
+    display: block;
+  }
+}
+
+// endregion

@@ -391,4 +391,14 @@ nav {
   color: red;
 }
 
+#photos {
+  width: 100%;
+  max-width: var(--container-width);
+  margin: 0 auto;
+}
+#photos img {
+  width: 100%;
+  display: block;
+}
+
 /*# sourceMappingURL=style.css.map */
