@@ -25,4 +25,4 @@ dist-ssr
 /public/data/concerts.json
 /public/data/music.json
 
-.express_cms
+.express_cms/*
