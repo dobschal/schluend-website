@@ -6,7 +6,7 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: ./public/data
-        target: /usr/src/app/public/data
+        source: ./.express_cms
+        target: /usr/src/app/.express_cms
     ports:
       - "3004:3004"

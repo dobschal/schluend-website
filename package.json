@@ -5,14 +5,16 @@
   "type": "module",
   "scripts": {
     "scss": "sass --watch styles/style.scss public/build/style.css",
-    "start": "nodemon server.js & npm run scss"
+    "start": "nodemon -e html,js server.js & npm run scss"
   },
   "devDependencies": {
     "nodemon": "^3.1.10",
     "sass": "^1.89.2"
   },
   "dependencies": {
+    "@dobschal/express-cms": "1.0.2",
     "ejs": "^3.1.10",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "multer": "^2.0.1"
   }
 }
