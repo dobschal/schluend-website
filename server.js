@@ -17,6 +17,10 @@ expressCms(app, {
             spotify: "text",
             bandcamp: "text",
             image: "text",
+        },
+        photos: {
+            author: "text",
+            file: "file",
         }
     }
 });
@@ -28,6 +32,7 @@ app.get('/{*splat}', async (req, res) => {
     res.render("index", {
         concerts: readData("concerts"),
         musicItems: readData("music"),
+        photos: readData("photos"),
     });
 })
 

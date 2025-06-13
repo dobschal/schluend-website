@@ -115,28 +115,24 @@
 
 <section id="photos">
     <h2>Fotos</h2>
-    <p>Credits: Emily Spitznagel</p>
-    <div></div>
+    <div>
+        <% for(const photo of photos) { %>
+            <div style="background-image: url('<%= photo.file %>')">
+                <p>© <%= photo.author %></p>
+            </div>
+        <% } %>
+    </div>
 </section>
-
-<script>
-    const photos = ["SCHLUEND-2024.JPG", "SCHLUEND-2024_hochkant.jpg", "SCHLUEND-2025_komprimiert.jpg", "schluend1.png", "schluend3.png", "schluend5.png", "schluend20.png", "schluend22.png"];
-    const photosSection = document.querySelector("#photos > div");
-    photos.forEach(photo => {
-        const img = document.createElement("img");
-        img.src = `/photos/${photo}`;
-        img.alt = "SCHLÜND";
-        img.classList.add("photo");
-        photosSection.appendChild(img);
-    });
-</script>
 
 <!-- endregion photos -->
 
 <footer>
-    <a href="/express-cms">Admin</a>
-    <p>© 2025 SCHLÜND. Alle Rechte vorbehalten. Diese Seite verwendet keinerlei Cookies oder Third-Party tools. Es
-        werden keine Nutzerdaten erfasst.</p>
+    <a href="/express-cms">👉 Admin</a>
+    <p>
+        © 2025 SCHLÜND. Alle Rechte vorbehalten. Diese Seite verwendet keinerlei Cookies oder Third-Party tools. Es
+        werden keine Nutzerdaten erfasst oder externen Inhalte geladen. Bei Fragen wende dich bitte an:
+        <a href="mailto:booking@schluend.fun">booking@schluend.fun</a>
+    </p>
 </footer>
 
 </body>
