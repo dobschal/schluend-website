@@ -26,3 +26,4 @@ dist-ssr
 /public/data/music.json
 
 .express_cms/*
+/.express_cms/data/music.json
