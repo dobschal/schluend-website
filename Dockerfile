@@ -1,4 +1,4 @@
-FROM node:16.20.2-slim
+FROM node:20-slim
 
 RUN echo "Update OS"
 RUN apt-get update
