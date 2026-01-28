@@ -51,12 +51,14 @@
         <a href="#music">Musik</a>
         <a href="#concerts">Konzerte</a>
         <a href="#photos">Fotos</a>
+        <a href="#recommendations">Stimmen</a>
+        <a href="#blog">Blog</a>
         <a href="#concerts">Booking</a>
     </nav>
     <div class="social-media-items">
         <a href="https://open.spotify.com/intl-de/artist/3aF61CJZtup6Mkpg99iwnf?si=69kRHWe-QBejv0eOGtd-0A"
            target="_blank" id="spotify">Spotify</a>
-        <a href=https://music.apple.com/de/artist/schlund/1439601530" target="_blank" id="apple-music">Apple Music</a>
+        <a href="https://music.apple.com/de/artist/schlund/1439601530" target="_blank" id="apple-music">Apple Music</a>
         <a href="https://www.youtube.com/channel/UCMBq97nCVyhmniwB4WDTnYg?app=desktop" target="_blank" id="youtube">YouTube</a>
         <a href="https://www.instagram.com/schluend.band/" target="_blank" id="instagram">Instagram</a>
         <a href="https://schluend.bandcamp.com/album/splitt-ep" target="_blank" id="bandcamp">Bandcamp</a>
@@ -64,9 +66,11 @@
     <div class="hero-image-with-text">
         <img class="hero-image" src="/2025-schlund.png" alt="SCHLÜND">
         <p>
-            SCHLÜNDs Musik ist wie ein Schlag in die Magengrube: hart, dreckig und von bleibendem Eindruck.
-            Geprägt von intensiven Beats und hypnotischen Riffs ist jeder Song eine Einladung sich von
-            festgefahrenen Strukturen zu befreien und der musikalischen Entfaltung hinzugeben.
+            SCHLÜNDs Musik ist wie ein Schlag in die Magengrube: hart, dreckig und von bleibendem
+            Eindruck. Geprägt von intensiven Beats und hypnotischen Riffs, ist jeder Song eine
+            Einladung, sich von festgefahrenen Strukturen zu befreien und der musikalischen
+            Entfaltung hinzugeben.
+            FFO: DŸSE, Turbostaat, Lessoner
         </p>
     </div>
 </section>
@@ -125,6 +129,82 @@
 </section>
 
 <!-- endregion photos -->
+
+<!-- region recommendations -->
+
+<section id="recommendations">
+    <h2>Stimmen</h2>
+    <% for(const recommendation of recommendations) { %>
+        <blockquote>
+            <p>"<%= recommendation.text %>"</p>
+            <cite>— <%= recommendation.author %></cite>
+        </blockquote>
+    <% } %>
+</section>
+
+<!-- endregion recommendations -->
+
+<!-- region blog -->
+
+<section id="blog">
+    <h2>Blog</h2>
+    <div class="blog-header">
+        <button class="blog-nav blog-prev" onclick="navigateBlog(-1)" aria-label="Previous entry" style="visibility: hidden;">&larr;</button>
+        <div class="blog-indicators">
+            <% blogEntries.forEach((entry, index) => { %>
+                <span class="blog-indicator<%= index === 0 ? ' active' : '' %>" data-index="<%= index %>" onclick="showBlogEntry(<%= index %>)"></span>
+            <% }); %>
+        </div>
+        <button class="blog-nav blog-next" onclick="navigateBlog(1)" aria-label="Next entry" style="visibility: <%= blogEntries.length <= 1 ? 'hidden' : 'visible' %>;">&rarr;</button>
+    </div>
+    <div class="blog-entries">
+        <% blogEntries.forEach((entry, index) => { %>
+            <article class="blog-entry<%= entry.image ? ' has-image' : ' no-image' %>" data-index="<%= index %>" style="display: <%= index === 0 ? 'flex' : 'none' %>;">
+                <% if (entry.image) { %>
+                    <div class="blog-image" style="background-image: url('<%= entry.image %>');"></div>
+                <% } %>
+                <div class="blog-content">
+                    <time datetime="<%= entry.date %>"><%= entry.date %></time>
+                    <h3><%= entry.title %></h3>
+                    <p><%= entry.content %></p>
+                </div>
+            </article>
+        <% }); %>
+    </div>
+</section>
+
+<script>
+    let currentBlogIndex = 0;
+    const blogEntries = document.querySelectorAll('.blog-entry');
+    const blogIndicators = document.querySelectorAll('.blog-indicator');
+    const blogPrev = document.querySelector('.blog-prev');
+    const blogNext = document.querySelector('.blog-next');
+    const totalEntries = blogEntries.length;
+
+    function updateNavVisibility() {
+        blogPrev.style.visibility = currentBlogIndex === 0 ? 'hidden' : 'visible';
+        blogNext.style.visibility = currentBlogIndex === totalEntries - 1 ? 'hidden' : 'visible';
+    }
+
+    function showBlogEntry(index) {
+        if (totalEntries === 0) return;
+        if (index < 0 || index >= totalEntries) return;
+        currentBlogIndex = index;
+        blogEntries.forEach((entry, i) => {
+            entry.style.display = i === currentBlogIndex ? 'flex' : 'none';
+        });
+        blogIndicators.forEach((indicator, i) => {
+            indicator.classList.toggle('active', i === currentBlogIndex);
+        });
+        updateNavVisibility();
+    }
+
+    function navigateBlog(direction) {
+        showBlogEntry(currentBlogIndex + direction);
+    }
+</script>
+
+<!-- endregion blog -->
 
 <footer>
     <a href="/express-cms">👉 Admin</a>

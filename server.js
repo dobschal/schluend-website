@@ -21,6 +21,16 @@ expressCms(app, {
         photos: {
             author: "text",
             file: "file",
+        },
+        recommendations: {
+            author: "text",
+            text: "longtext",
+        },
+        blog: {
+            title: "text",
+            date: "date",
+            content: "longtext",
+            image: "image",
         }
     }
 });
@@ -33,6 +43,8 @@ app.get('/{*splat}', async (req, res) => {
         concerts: readData("concerts"),
         musicItems: readData("music"),
         photos: readData("photos"),
+        recommendations: readData("recommendations"),
+        blogEntries: readData("blog").sort((a, b) => new Date(b.date) - new Date(a.date)),
     });
 })
 

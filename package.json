@@ -12,7 +12,7 @@
     "sass": "^1.89.2"
   },
   "dependencies": {
-    "@dobschal/express-cms": "1.0.2",
+    "@dobschal/express-cms": "1.0.9",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "multer": "^2.0.1"
