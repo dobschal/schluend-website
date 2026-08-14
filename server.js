@@ -1,5 +1,6 @@
 import express from 'express';
 import expressCms, {readData} from "@dobschal/express-cms";
+import {collectImages, formatDate, renderRichText} from "./lib/format.js";
 
 const app = express()
 const port = 3004
@@ -31,6 +32,9 @@ expressCms(app, {
             date: "date",
             content: "longtext",
             image: "image",
+            image2: "image",
+            image3: "image",
+            image4: "image",
         }
     }
 });
@@ -45,6 +49,9 @@ app.get('/{*splat}', async (req, res) => {
         photos: readData("photos"),
         recommendations: readData("recommendations"),
         blogEntries: readData("blog").sort((a, b) => new Date(b.date) - new Date(a.date)),
+        collectImages,
+        formatDate,
+        renderRichText,
     });
 })
 

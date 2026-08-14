@@ -395,6 +395,64 @@ nav {
   color: red;
 }
 
+.lightbox {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 1rem;
+  padding: 4rem 1rem 2rem 1rem;
+  background-color: #0A0A0A;
+  animation: fade-in 0.2s ease-in-out;
+}
+.lightbox[hidden] {
+  display: none;
+}
+.lightbox .lightbox-image {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  cursor: pointer;
+  user-select: none;
+}
+.lightbox .lightbox-caption, .lightbox .lightbox-counter {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 2px;
+  opacity: 0.6;
+  text-align: center;
+}
+.lightbox .lightbox-caption[hidden], .lightbox .lightbox-counter[hidden] {
+  display: none;
+}
+.lightbox .lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+.lightbox .lightbox-close:hover {
+  border-color: #FFFFFF;
+}
+
+body.lightbox-open {
+  overflow: hidden;
+}
+
 #photos {
   width: 100%;
   max-width: var(--container-width);
@@ -415,12 +473,13 @@ nav {
   position: relative;
   animation: fade-in 0.5s ease-in-out;
   background-color: #0A0A0A;
-  transition: transform 0.5s ease-in-out;
+  cursor: pointer;
+  transition: opacity 0.3s ease-in-out;
 }
 #photos > div > div:hover, #photos > div > div:active {
-  transform: scale(1.66);
-  z-index: 99;
-  background-size: contain;
+  opacity: 0.85;
+  outline: 2px solid #FFFFFF;
+  outline-offset: -2px;
 }
 @media screen and (min-width: 720px) {
   #photos > div > div {
@@ -499,18 +558,47 @@ nav {
     flex-direction: row;
   }
 }
+#blog .blog-entry.has-image .blog-images {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.5rem;
+  width: 100%;
+}
+@media screen and (min-width: 768px) {
+  #blog .blog-entry.has-image .blog-images {
+    width: 40%;
+  }
+}
 #blog .blog-entry.has-image .blog-image {
   width: 100%;
   aspect-ratio: 16/9;
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+  cursor: pointer;
 }
 @media screen and (min-width: 768px) {
   #blog .blog-entry.has-image .blog-image {
-    width: 40%;
     aspect-ratio: 1;
   }
+}
+#blog .blog-entry.has-image .blog-thumbs {
+  display: flex;
+  flex-direction: row;
+  column-gap: 0.5rem;
+}
+#blog .blog-entry.has-image .blog-thumbs .blog-thumb {
+  width: calc((100% - 1rem) / 3);
+  aspect-ratio: 1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+#blog .blog-entry.has-image .blog-thumbs .blog-thumb:hover, #blog .blog-entry.has-image .blog-thumbs .blog-thumb:active {
+  border-color: #FFFFFF;
 }
 @media screen and (min-width: 768px) {
   #blog .blog-entry.has-image .blog-content {
@@ -531,7 +619,7 @@ nav {
     font-size: 36px;
   }
 }
-#blog .blog-entry.no-image .blog-content p {
+#blog .blog-entry.no-image .blog-content .blog-text p {
   font-size: 16px;
   line-height: 1.8;
 }
@@ -555,16 +643,27 @@ nav {
     font-size: 28px;
   }
 }
-#blog .blog-content p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.7;
+#blog .blog-text {
   text-transform: none;
 }
+#blog .blog-text p {
+  margin: 0 0 1rem 0;
+  font-size: 14px;
+  line-height: 1.7;
+}
 @media screen and (min-width: 768px) {
-  #blog .blog-content p {
+  #blog .blog-text p {
     font-size: 16px;
   }
+}
+#blog .blog-text p:last-child {
+  margin-bottom: 0;
+}
+#blog .blog-text a:link, #blog .blog-text a:visited {
+  text-decoration: underline;
+}
+#blog .blog-text strong {
+  font-weight: 700;
 }
 
 #recommendations {

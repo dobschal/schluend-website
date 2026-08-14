@@ -121,7 +121,10 @@
     <h2>Fotos</h2>
     <div>
         <% for(const photo of photos) { %>
-            <div style="background-image: url('<%= photo.file %>')">
+            <div style="background-image: url('<%= photo.file %>')"
+                 data-lightbox="photos"
+                 data-lightbox-src="<%= photo.file %>"
+                 data-lightbox-caption="© <%= photo.author %>">
                 <p>© <%= photo.author %></p>
             </div>
         <% } %>
@@ -148,25 +151,45 @@
 
 <section id="blog">
     <h2>Blog</h2>
-    <div class="blog-header">
-        <button class="blog-nav blog-prev" onclick="navigateBlog(-1)" aria-label="Previous entry" style="visibility: hidden;">&larr;</button>
-        <div class="blog-indicators">
-            <% blogEntries.forEach((entry, index) => { %>
-                <span class="blog-indicator<%= index === 0 ? ' active' : '' %>" data-index="<%= index %>" onclick="showBlogEntry(<%= index %>)"></span>
-            <% }); %>
+    <% if (blogEntries.length > 1) { %>
+        <div class="blog-header">
+            <button class="blog-nav blog-prev" onclick="navigateBlog(-1)" aria-label="Previous entry" style="visibility: hidden;">&larr;</button>
+            <div class="blog-indicators">
+                <% blogEntries.forEach((entry, index) => { %>
+                    <span class="blog-indicator<%= index === 0 ? ' active' : '' %>" data-index="<%= index %>" onclick="showBlogEntry(<%= index %>)"></span>
+                <% }); %>
+            </div>
+            <button class="blog-nav blog-next" onclick="navigateBlog(1)" aria-label="Next entry">&rarr;</button>
         </div>
-        <button class="blog-nav blog-next" onclick="navigateBlog(1)" aria-label="Next entry" style="visibility: <%= blogEntries.length <= 1 ? 'hidden' : 'visible' %>;">&rarr;</button>
-    </div>
+    <% } %>
     <div class="blog-entries">
         <% blogEntries.forEach((entry, index) => { %>
-            <article class="blog-entry<%= entry.image ? ' has-image' : ' no-image' %>" data-index="<%= index %>" style="display: <%= index === 0 ? 'flex' : 'none' %>;">
-                <% if (entry.image) { %>
-                    <div class="blog-image" style="background-image: url('<%= entry.image %>');"></div>
+            <% const images = collectImages(entry); %>
+            <article class="blog-entry<%= images.length ? ' has-image' : ' no-image' %>" data-index="<%= index %>" style="display: <%= index === 0 ? 'flex' : 'none' %>;">
+                <% if (images.length) { %>
+                    <div class="blog-images">
+                        <div class="blog-image"
+                             style="background-image: url('<%= images[0].full %>');"
+                             data-lightbox="blog-<%= index %>"
+                             data-lightbox-src="<%= images[0].full %>"
+                             data-lightbox-caption="<%= entry.title %>"></div>
+                        <% if (images.length > 1) { %>
+                            <div class="blog-thumbs">
+                                <% images.slice(1).forEach(image => { %>
+                                    <div class="blog-thumb"
+                                         style="background-image: url('<%= image.thumbnail %>');"
+                                         data-lightbox="blog-<%= index %>"
+                                         data-lightbox-src="<%= image.full %>"
+                                         data-lightbox-caption="<%= entry.title %>"></div>
+                                <% }); %>
+                            </div>
+                        <% } %>
+                    </div>
                 <% } %>
                 <div class="blog-content">
-                    <time datetime="<%= entry.date %>"><%= entry.date %></time>
+                    <time datetime="<%= entry.date %>"><%= formatDate(entry.date) %></time>
                     <h3><%= entry.title %></h3>
-                    <p><%= entry.content %></p>
+                    <div class="blog-text"><%- renderRichText(entry.content) %></div>
                 </div>
             </article>
         <% }); %>
@@ -182,6 +205,7 @@
     const totalEntries = blogEntries.length;
 
     function updateNavVisibility() {
+        if (!blogPrev || !blogNext) return; // Header fehlt, wenn es nur einen Eintrag gibt
         blogPrev.style.visibility = currentBlogIndex === 0 ? 'hidden' : 'visible';
         blogNext.style.visibility = currentBlogIndex === totalEntries - 1 ? 'hidden' : 'visible';
     }
@@ -228,6 +252,111 @@
         Bei Kontakt per E-Mail werden die übermittelten Daten ausschließlich zur Bearbeitung der Anfrage genutzt.<br>
     </p>
 </footer>
+
+<!-- region lightbox -->
+
+<div id="lightbox" class="lightbox" hidden>
+    <button class="lightbox-close" aria-label="Schließen">&times;</button>
+    <img class="lightbox-image" src="" alt="">
+    <p class="lightbox-caption"></p>
+    <span class="lightbox-counter"></span>
+</div>
+
+<script>
+    (function () {
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = lightbox.querySelector('.lightbox-image');
+        const lightboxCaption = lightbox.querySelector('.lightbox-caption');
+        const lightboxCounter = lightbox.querySelector('.lightbox-counter');
+        const galleries = {};
+        let gallery = [];
+        let index = 0;
+        let swiped = false;
+
+        // Galerien einsammeln: alle Elemente mit gleichem data-lightbox gehören zusammen,
+        // in DOM-Reihenfolge (Blog: großes Bild, dann Thumbnails).
+        document.querySelectorAll('[data-lightbox]').forEach(element => {
+            const name = element.dataset.lightbox;
+            galleries[name] = galleries[name] || [];
+            galleries[name].push({
+                element,
+                src: element.dataset.lightboxSrc,
+                caption: element.dataset.lightboxCaption || ''
+            });
+        });
+
+        document.addEventListener('click', event => {
+            const trigger = event.target.closest('[data-lightbox]');
+            if (!trigger) return;
+            const items = galleries[trigger.dataset.lightbox] || [];
+            const position = items.findIndex(item => item.element === trigger);
+            if (position === -1) return;
+            open(items, position);
+        });
+
+        function open(items, position) {
+            gallery = items;
+            index = position;
+            show();
+            lightbox.hidden = false;
+            document.body.classList.add('lightbox-open');
+        }
+
+        function show() {
+            const item = gallery[index];
+            lightboxImage.src = item.src;
+            lightboxImage.alt = item.caption;
+            lightboxCaption.textContent = item.caption;
+            lightboxCaption.hidden = !item.caption;
+            lightboxCounter.textContent = (index + 1) + ' / ' + gallery.length;
+            lightboxCounter.hidden = gallery.length < 2;
+        }
+
+        function step(direction) {
+            index = (index + direction + gallery.length) % gallery.length;
+            show();
+        }
+
+        function close() {
+            lightbox.hidden = true;
+            lightboxImage.src = '';
+            document.body.classList.remove('lightbox-open');
+        }
+
+        lightbox.addEventListener('click', event => {
+            if (swiped) { // Wisch-Gesten lösen auf manchen Geräten zusätzlich ein Klick-Event aus
+                swiped = false;
+                return;
+            }
+            // X-Button und der dunkle Rand schließen, ein Klick aufs Bild blättert weiter.
+            if (event.target.closest('.lightbox-close') || event.target === lightbox) return close();
+            if (gallery.length < 2) return close();
+            step(1);
+        });
+
+        document.addEventListener('keydown', event => {
+            if (lightbox.hidden) return;
+            if (event.key === 'Escape') return close();
+            if (event.key === 'ArrowRight') return step(1);
+            if (event.key === 'ArrowLeft') return step(-1);
+        });
+
+        let touchStartX = null;
+        lightbox.addEventListener('touchstart', event => {
+            touchStartX = event.changedTouches[0].clientX;
+        }, {passive: true});
+        lightbox.addEventListener('touchend', event => {
+            if (touchStartX === null) return;
+            const distance = event.changedTouches[0].clientX - touchStartX;
+            touchStartX = null;
+            if (Math.abs(distance) < 40 || gallery.length < 2) return;
+            swiped = true;
+            step(distance < 0 ? 1 : -1);
+        }, {passive: true});
+    })();
+</script>
+
+<!-- endregion lightbox -->
 
 </body>
 </html>
